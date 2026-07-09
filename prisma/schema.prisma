@@ -1,0 +1,67 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+model InstrumentType {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  instruments Instrument[]
+
+  @@map("instrument_types")
+}
+
+model Department {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  instruments Instrument[]
+
+  @@map("departments")
+}
+
+model MeasurementType {
+  id          String       @id @default(uuid())
+  name        String       @unique
+  instruments Instrument[]
+
+  @@map("measurement_types")
+}
+
+model Instrument {
+  id                 String            @id @default(uuid())
+  name               String
+  typeId             String            @map("type_id")
+  serialNumber       String            @map("serial_number")
+  inventoryNumber    String            @map("inventory_number")
+  assetNumber        String            @map("asset_number")
+  manufactureYear    Int               @map("manufacture_year")
+  acquisitionDate    DateTime          @map("acquisition_date")
+  status             String
+  initialCost        Decimal           @map("initial_cost")
+  departmentId       String            @map("department_id")
+  location           String
+  employeeNumber     String            @map("employee_number")
+  responsiblePerson  String            @map("responsible_person")
+  calibrationOrg     String            @map("calibration_org")
+  lastCalibration    DateTime          @map("last_calibration")
+  nextCalibration    DateTime          @map("next_calibration")
+  calibrationResult  String            @map("calibration_result")
+  certificateNumber  String            @map("certificate_number")
+  measurementTypeId  String            @map("measurement_type_id")
+  notes              String?
+  createdAt          DateTime          @default(now()) @map("created_at")
+  updatedAt          DateTime          @updatedAt @map("updated_at")
+
+  type            InstrumentType @relation(fields: [typeId], references: [id])
+  department      Department     @relation(fields: [departmentId], references: [id])
+  measurementType MeasurementType @relation(fields: [measurementTypeId], references: [id])
+
+  @@index([serialNumber])
+  @@index([inventoryNumber])
+  @@index([nextCalibration])
+  @@map("instruments")
+}
